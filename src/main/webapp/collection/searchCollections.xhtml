@@ -1,0 +1,119 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:of="http://omnifaces.org/functions"
+                xmlns:p="http://primefaces.org/ui"
+>
+    <ui:param name="caPageName" value="Szukaj kolekcji" />
+
+    <ui:define name="main">
+        <c:set var="controller" value="#{searchCollectionsController}" />
+        <f:metadata>
+            <f:viewParam name="id"/>
+            <f:viewParam name="query"/>
+        </f:metadata>
+
+        <strong>
+            Szukasz kolekcji w kategorii
+            <ui:include src="/WEB-INF/templates/renderCategory.xhtml">
+                <ui:param name="category" value="#{controller.category}" />
+            </ui:include>
+        </strong>
+        <br/>
+
+        <o:form id="form" includeViewParams="false" enctype="multipart/form-data">
+            <h:panelGrid columns="3" styleClass="ca-table">
+                <h:outputLabel for="sc_name" value="Nazwa:" />
+                <h:inputText id="sc_name" value="#{controller.form.name}" />
+                <h:message for="sc_name" errorClass="invalid" />
+
+                <h:outputLabel for="sc_owner" value="Właściciel:" />
+                <h:inputText id="sc_owner" value="#{controller.form.owner}" />
+                <h:message for="sc_owner" errorClass="invalid" />
+
+                <h:outputLabel for="sc_category" value="Kategoria:" />
+                <h:inputText id="sc_category" value="#{controller.form.category}" />
+                <h:message for="sc_category" errorClass="invalid" />
+
+                <h:outputLabel for="sc_visibility" value="Widoczność:" />
+                <h:selectOneMenu id="sc_visibility" value="#{controller.form.visibility}">
+                    <f:selectItems value="#{constController.searchCollectionVisibilities}"
+                                   var="col_vis" itemValue="#{col_vis}" itemLabel="#{col_vis.label}"/>
+                </h:selectOneMenu>
+                <h:message for="sc_visibility" errorClass="invalid" />
+
+            </h:panelGrid>
+
+            <br/>
+            <b>Atrybuty:</b>
+            <h:dataTable value="#{controller.attributesToSearch}" var="searchAttr">
+                <h:column headerText="Atrybut">
+                    <h:outputLabel value="#{searchAttr.name}:" />
+                </h:column>
+                <h:column headerText="Komparator">
+                    <h:selectOneMenu id="sc_attr_comp" value="#{searchAttr.comparator}">
+                        <f:selectItems value="#{searchAttr.availableComparators}"
+                                       var="sc_attr_comp_x" itemValue="#{sc_attr_comp_x}" itemLabel="#{sc_attr_comp_x.displayName}"/>
+                        <f:ajax render="search-attribute-form-value"/>
+                    </h:selectOneMenu>
+                </h:column>
+                <h:column headerText="Wartość">
+                    <ui:include src="/WEB-INF/templates/renderSearchAttributeFormValue.xhtml">
+                        <ui:param name="searchAttr" value="${searchAttr}" />
+                    </ui:include>
+                </h:column>
+                <h:column>
+                    <h:message for="sc_attr_comp" errorClass="invalid" />
+                    <ui:include src="/WEB-INF/templates/editAttributeMessage.xhtml">
+                        <ui:param name="fieldId" value="sc_attr_val" />
+                        <ui:param name="attributeType" value="#{searchAttr.type}" />
+                    </ui:include>
+                </h:column>
+            </h:dataTable>
+
+            <h:panelGrid columns="2" styleClass="ca-table">
+                <h:commandLink styleClass="btn btn-primary" action="#{controller.search}">
+                    <h:graphicImage value="/resources/gfx/icons/search_16.png"/>
+                    Szukaj
+                </h:commandLink>
+            </h:panelGrid>
+        </o:form>
+
+        <br/>
+        <b>Wyniki wyszukiwania</b><br/>
+        <c:choose>
+            <c:when test="#{empty controller.results.list}">
+                Brak wyników<br/>
+            </c:when>
+            <c:otherwise>
+                <table class="ca-table">
+                    <ui:repeat var="collection" value="#{controller.results.list}" varStatus="status">
+                        <tr>
+                            <td>#{controller.results.recordsFrom + status.index}</td>
+                            <td>
+                                <ui:include src="/WEB-INF/templates/renderCollection.xhtml">
+                                    <ui:param name="collection" value="#{collection}" />
+                                </ui:include>
+                            </td>
+                        </tr>
+                    </ui:repeat>
+                </table>
+            </c:otherwise>
+        </c:choose>
+        <ui:include src="/WEB-INF/templates/renderPages.xhtml">
+            <ui:param name="outcome" value="/collection/searchCollections" />
+            <ui:param name="id" value="#{controller.category.id}" />
+            <ui:param name="pagedResult" value="#{controller.results}" />
+            <ui:param name="extraParamName" value="query" />
+            <ui:param name="extraParamValue" value="#{controller.query}" />
+        </ui:include>
+        <br/>
+
+    </ui:define>
+</ui:composition>

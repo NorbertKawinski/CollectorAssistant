@@ -1,0 +1,20 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+>
+    <ui:define name="main">
+        <div>
+            <p>Witaj w tajnym panelu administratora</p>
+            <br/>
+
+            <p>Dostępne funkcje:</p>
+            <ul>
+                <li><a href="../category/manageCategories.xhtml">Zarządzaj kategoriami</a></li>
+                <li><a href="../user/searchUsers.xhtml">Szukaj użytkowników</a></li>
+            </ul>
+        </div>
+
+    </ui:define>
+</ui:composition>

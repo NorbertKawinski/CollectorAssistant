@@ -1,0 +1,56 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:of="http://omnifaces.org/functions"
+                xmlns:p="http://primefaces.org/ui"
+>
+    <ui:param name="caPageName" value="Dodawanie atrybutu" />
+
+    <ui:define name="main">
+        <c:set var="controller" value="#{createElementAttributeController}" />
+        <f:metadata>
+            <f:viewParam name="template"/>
+            <f:viewParam name="element"/>
+        </f:metadata>
+
+        <strong>
+            <h:outputText value="Dodawanie atrybutu '#{controller.attributeTemplate.name}' do: "/>
+            <h:link value="#{controller.element.name}" outcome="/element/readElement" >
+                <f:param name="id" value="#{controller.element.id}" />
+            </h:link>
+        </strong>
+
+        <o:form id="form" includeViewParams="true" enctype="multipart/form-data">
+            <h:inputHidden id="aa_templateId" value="#{controller.attributeTemplate.id}"/>
+            <h:inputHidden id="aa_targetId" value="#{controller.element.id}"/>
+
+            <table class="ca-table">
+                <tr>
+                    <ui:include src="/WEB-INF/templates/editAttribute.xhtml">
+                        <ui:param name="fieldId" value="aa_value" />
+                        <ui:param name="attributeType" value="#{controller.attributeTemplate.type}" />
+                        <ui:param name="label" value="Wartość" />
+                        <ui:param name="form" value="#{controller.editAttributeBaseController}" />
+                    </ui:include>
+                </tr>
+            </table>
+
+            <p>
+                <h:panelGrid columns="2" styleClass="ca-table">
+                    <h:commandLink action="#{controller.create}" styleClass="btn btn-success">
+                        <h:graphicImage value="/resources/gfx/icons/check_16.png"/>
+                        Dodaj
+                    </h:commandLink>
+                </h:panelGrid>
+            </p>
+        </o:form>
+
+    </ui:define>
+
+</ui:composition>

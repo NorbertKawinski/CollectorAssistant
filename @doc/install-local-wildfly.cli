@@ -1,0 +1,13 @@
+# connect 127.0.0.1
+
+batch
+
+# DataSource configuration
+module add --name=com.mysql --resources=D:\OneDrive\projects\CollectorAssistant\docker\resources\CollectorAssistant\install\mysql-connector-java-8.0.20.jar --dependencies=javax.api,javax.transaction.api
+/subsystem=datasources/jdbc-driver=mysql:add(driver-name=mysql,driver-module-name=com.mysql)
+data-source add --jndi-name=java:/collectorapp/datasources/MainDS --name=CAMySQLPool --connection-url=jdbc:mysql://localhost:3306/collector_assistant --driver-name=mysql --user-name=root --password=
+
+# Logging configuration
+/subsystem=logging/pattern-formatter=COLOR-PATTERN:write-attribute(name="pattern", value="%K{level}%d{HH:mm:ss,SSS} [%t] %5p %X{indent} %s%e{} a.t(%F:%L)%n")
+
+run-batch

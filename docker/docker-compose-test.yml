@@ -1,0 +1,72 @@
+version: '3'
+services:
+
+  catest_mariadb_test:
+    container_name: ca_mariadb_test
+    image: "mariadb"
+    ports:
+      - "12102:3306"
+    environment:
+      - "MYSQL_ROOT_PASSWORD=123456"
+      - "MYSQL_DATABASE=collector_assistant_test"
+      - "MYSQL_USER=cadb"
+      - "MYSQL_PASSWORD=cadb1234"
+    restart: unless-stopped
+
+  mariadb_admin_test:
+    container_name: ca_mariadb_admin_test
+    image: "adminer"
+    ports:
+      - "12103:8080"
+    environment:
+      - "ADMINER_DEFAULT_SERVER=mariadb_test"
+    depends_on:
+      - mariadb_test
+    restart: unless-stopped
+
+  app_server_test:
+    build:
+      context: ./resources/CollectorAssistantTest
+      dockerfile: Dockerfile
+      args:
+        - "NK_WILDFLY_ADMIN_USER=admin"
+        - "NK_WILDFLY_ADMIN_PASS=123456"
+        - "NK_WILDFLY_MYSQL_CONNECTOR_NAME=mysql-connector-java-8.0.20.jar"
+        - "NK_WILDFLY_LOGGER_PATTERN=%K{level}%d{HH:mm:ss,SSS} [%t] %5p %X{indent} %s%e{} o.o(%F:%L)%n"
+        - "NK_CA_ARTIFACT_NAME=collector-assistant.war"
+        - "NK_CA_DATASOURCE_JNDI_NAME=java:/collectorapp/datasources/MainDS"
+        # Since we're also deploying MySQL, we can use container names here, no IP addresses :)
+        - "NK_CA_DATASOURCE_HOST_NAME=mariadb_test"
+        # Even though the MariaDB is exposed at port 12102, this container sees MariaDB directly in the same network, so we can use original (3306) port
+        - "NK_CA_DATASOURCE_PORT=3306"
+        - "NK_CA_DATASOURCE_SCHEMA=collector_assistant_test?serverTimezone=UTC\\&useUnicode=yes\\&characterEncoding=UTF-8"
+        - "NK_CA_DATASOURCE_USER=cadb"
+        - "NK_CA_DATASOURCE_PASS=cadb1234"
+    container_name: ca_server_test
+    #image: collector_assistant
+    ports:
+      # Default webserver port. Would love to set it to 12100, but Arquillian doesn't seem to like this change
+      - "8080:8080"
+      # Admin web panel port. Would love to set it to 12101, but Arquillian doesn't seem to like this change
+      - "9990:9990"
+    environment:
+      - "ALQ_ENV=PROD"
+    depends_on:
+      - mariadb_test
+    restart: unless-stopped
+
+  elasticsearch:
+    container_name: ca_elasticsearch_test
+    image: "elasticsearch:7.9.2"
+    environment:
+      - "xpack.ml.enabled=false"
+      - "discovery.type=single-node"
+    restart: unless-stopped
+
+  ca_imagematch_server:
+    container_name: ca_imagematch_server_test
+    build:
+      context: ./resources/CollectorAssistantImageMatch
+#    ports:
+#      - "9201:5000"
+    restart: unless-stopped

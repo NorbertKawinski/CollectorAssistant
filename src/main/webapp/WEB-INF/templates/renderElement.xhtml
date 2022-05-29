@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+      xmlns:o="http://omnifaces.org/ui"
+      xmlns:of="http://omnifaces.org/functions"
+      xmlns:p="http://primefaces.org/ui">
+<!-- JSF parameters -->
+<!--@elvariable id="element" type="net.kawinski.collecting.data.model.Element" -->
+<!--@elvariable id="extraStyles" type="java.lang.String" -->
+<h:body>
+
+    <table>
+        <tr>
+            <ui:include src="/WEB-INF/templates/renderElementCells.xhtml">
+                <ui:param name="element" value="#{element}" />
+                <ui:param name="extraStyles" value="#{extraStyles}" />
+            </ui:include>
+        </tr>
+    </table>
+
+</h:body>
+</html>

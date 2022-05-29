@@ -1,0 +1,13 @@
+# connect 127.0.0.1
+
+batch
+
+# DataSource configuration
+module add --name=com.mysql --resources=NK_CA_INSTALL_DIR/NK_WILDFLY_MYSQL_CONNECTOR_NAME --dependencies=javax.api,javax.transaction.api
+/subsystem=datasources/jdbc-driver=mysql:add(driver-name=mysql,driver-module-name=com.mysql)
+data-source add --jndi-name=NK_CA_DATASOURCE_JNDI_NAME --name=CAMySQLPool --connection-url=jdbc:mysql://NK_CA_DATASOURCE_HOST_NAME:NK_CA_DATASOURCE_PORT/NK_CA_DATASOURCE_SCHEMA --driver-name=mysql --user-name=NK_CA_DATASOURCE_USER --password=NK_CA_DATASOURCE_PASS
+
+# Logging configuration
+/subsystem=logging/pattern-formatter=COLOR-PATTERN:write-attribute(name="pattern", value="NK_WILDFLY_LOGGER_PATTERN")
+
+run-batch

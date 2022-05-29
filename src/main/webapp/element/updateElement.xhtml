@@ -1,0 +1,109 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:of="http://omnifaces.org/functions"
+                xmlns:p="http://primefaces.org/ui"
+>
+    <ui:param name="caPageName" value="Kolekcja - Szczegóły" />
+
+    <ui:define name="main">
+        <c:set var="controller" value="#{updateElementController}" />
+        <f:metadata>
+            <f:viewParam name="id"/>
+        </f:metadata>
+
+        <strong>Edytujesz element:<br/></strong>
+        <ui:include src="/WEB-INF/templates/renderImage.xhtml">
+            <ui:param name="image" value="#{controller.element.image}" />
+        </ui:include>
+
+        <o:form includeViewParams="true" enctype="multipart/form-data">
+            <table class="ca-table">
+                <tr>
+                    <td>Id</td>
+                    <td><h:outputText value="#{controller.element.id}"/></td>
+                </tr>
+                <tr>
+                    <td>Nazwa</td>
+                    <td><h:inputText id="element-name" value="#{controller.element.name}" styleClass="input-td"/></td>
+                    <td><h:message for="element-name" errorClass="ca-invalid-feedback" /></td>
+                </tr>
+                <tr>
+                    <td>Należy do kolekcji</td>
+                    <td>
+                        <ui:include src="/WEB-INF/templates/renderCollection.xhtml">
+                            <ui:param name="collection" value="#{controller.element.presentIn}" />
+                        </ui:include>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Właściciel</td>
+                    <td>
+                        <ui:include src="/WEB-INF/templates/renderUser.xhtml">
+                            <ui:param name="user" value="#{controller.element.presentIn.owner}" />
+                        </ui:include>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Kategoria</td>
+                    <td>
+                        <ui:include src="/WEB-INF/templates/renderCategory.xhtml">
+                            <ui:param name="category" value="#{controller.element.category}" />
+                        </ui:include>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Bazuje na elemencie</td>
+                    <td>
+                        <c:choose>
+                            <c:when test="#{controller.element.containsBase()}">
+                                <h:link value="#{controller.element.basedOn.name}" outcome="/element/readElement" >
+                                    <f:param name="id" value="#{controller.element.basedOn.id}" />
+                                </h:link>
+                            </c:when>
+                            <c:otherwise>
+                                Nie
+                            </c:otherwise>
+                        </c:choose>
+                    </td>
+                </tr>
+                <tr>
+                    <td><h:outputLabel for="details_file" value="Nowe zdjęcie" /></td>
+                    <td><p:fileUpload id="details_file" value="#{controller.uploadedImage}" mode="simple" skinSimple="true"/></td>
+                    <td><h:message for="details_file" errorClass="ca-invalid-feedback" /></td>
+                </tr>
+                <c:if test="#{controller.element.image.icon != null}">
+                    <tr>
+                        <td>Miniaturka</td>
+                        <td>
+                            <ui:include src="/WEB-INF/templates/renderIcon.xhtml">
+                                <ui:param name="icon" value="#{controller.element.image}" />
+                            </ui:include>
+                        </td>
+                    </tr>
+                </c:if>
+                <tr>
+                    <td><h:outputLabel for="details_icon" value="Nowa miniaturka" /></td>
+                    <td><p:fileUpload id="details_icon" value="#{controller.uploadedIcon}" mode="simple" skinSimple="true"/></td>
+                    <td><h:message for="details_icon" errorClass="ca-invalid-feedback" /></td>
+                </tr>
+            </table>
+            <h:commandLink action="#{controller.updateElement}" styleClass="btn btn-primary">
+                <h:graphicImage value="/resources/gfx/icons/edit_16.png"/>
+                Zmień
+            </h:commandLink>
+            <h:link outcome="/element/deleteElement" styleClass="btn btn-primary ml-2">
+                <f:param name="id" value="#{controller.element.id}"/>
+                <h:graphicImage value="/resources/gfx/icons/delete_16.png"/>
+                Usuń
+            </h:link>
+        </o:form>
+
+    </ui:define>
+</ui:composition>

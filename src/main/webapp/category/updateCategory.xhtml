@@ -1,0 +1,84 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:of="http://omnifaces.org/functions"
+                xmlns:p="http://primefaces.org/ui"
+    >
+    <ui:param name="caPageName" value="Zarządzanie kategorią" />
+
+    <ui:define name="main">
+        <c:set var="controller" value="#{updateCategoryController}" />
+        <f:metadata>
+            <f:viewParam name="id"/>
+        </f:metadata>
+
+        <div>
+            <b>Edytujesz kategorię</b>
+            <o:form includeViewParams="true" enctype="multipart/form-data">
+                <table class="ca-table">
+                    <tr>
+                        <td>Id</td>
+                        <td><h:outputText value="#{controller.category.id}"/></td>
+                    </tr>
+                    <tr>
+                        <td>Nazwa</td>
+                        <td><h:inputText id="mc_cat_name" value="#{controller.category.name}"/></td>
+                        <td><h:message for="mc_cat_name" errorClass="ca-invalid-feedback"/></td>
+                    </tr>
+                    <tr>
+                        <!-- TODO: Możliwość modyfikacji -->
+                        <td>Kategoria nadrzędna</td>
+                        <td>
+                        <c:choose>
+                            <c:when test="#{controller.category.parent.present}">
+                                <h:link value="#{controller.category.parent.get().name}" outcome="manageCategory" >
+                                    <f:param name="id" value="#{controller.category.parent.get().id}" />
+                                </h:link>
+                            </c:when>
+                            <c:otherwise>
+                                <h:link value="#{globalLayoutController.rootCategory.name}" outcome="manageCategory" >
+                                    <f:param name="id" value="#{globalLayoutController.rootCategory.id}" />
+                                </h:link>
+                            </c:otherwise>
+                        </c:choose>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Czy może zawierać kolekcje</td>
+                        <td><h:selectBooleanCheckbox id="mc_cat_canContainCollections" value="#{controller.category.canContainCollections}"/></td>
+                        <td><h:message for="mc_cat_canContainCollections" errorClass="ca-invalid-feedback"/></td>
+                    </tr>
+
+                    <c:if test="#{controller.category.image.icon != null}">
+                        <tr>
+                            <td>Miniaturka</td>
+                            <td>
+                                <ui:include src="/WEB-INF/templates/renderIcon.xhtml">
+                                    <ui:param name="icon" value="#{controller.category.image}" />
+                                </ui:include>
+                            </td>
+                        </tr>
+                    </c:if>
+                    <tr>
+                        <td><h:outputLabel for="mc_cat_icon" value="Nowa miniaturka" /></td>
+                        <td><p:fileUpload id="mc_cat_icon" value="#{controller.uploadedIcon}" mode="simple" skinSimple="true"/></td>
+                        <td><h:message for="mc_cat_icon" errorClass="ca-invalid-feedback" /></td>
+                    </tr>
+
+                </table>
+                <h:commandLink action="#{controller.update}" styleClass="btn btn-primary">
+                    <h:graphicImage value="/resources/gfx/icons/edit_16.png"/>
+                    Zmień
+                </h:commandLink>
+            </o:form>
+
+        </div>
+
+    </ui:define>
+</ui:composition>

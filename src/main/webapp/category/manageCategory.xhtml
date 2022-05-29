@@ -1,0 +1,157 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:of="http://omnifaces.org/functions"
+                xmlns:p="http://primefaces.org/ui"
+    >
+    <ui:param name="caPageName" value="Zarządzanie kategorią" />
+
+    <ui:define name="main">
+        <c:set var="controller" value="#{manageCategoryController}" />
+        <f:metadata>
+            <f:viewParam name="id"/>
+        </f:metadata>
+
+        <div>
+            <b>Zarządzanie kategorią</b>
+            <table class="ca-table">
+                <tr>
+                    <td>Id</td>
+                    <td><h:outputText value="#{controller.category.id}"/></td>
+                </tr>
+                <tr>
+                    <td>Nazwa</td>
+                    <td><h:outputText id="mc_cat_name" value="#{controller.category.name}"/></td>
+                </tr>
+                <tr>
+                    <td>Kategoria nadrzędna</td>
+                    <td>
+                    <c:choose>
+                        <c:when test="#{controller.category.parent.present}">
+                            <h:link value="#{controller.category.parent.get().name}" outcome="manageCategory" >
+                                <f:param name="id" value="#{controller.category.parent.get().id}" />
+                            </h:link>
+                        </c:when>
+                        <c:otherwise>
+                            <h:link value="#{globalLayoutController.rootCategory.name}" outcome="manageCategory" >
+                                <f:param name="id" value="#{globalLayoutController.rootCategory.id}" />
+                            </h:link>
+                        </c:otherwise>
+                    </c:choose>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Czy może zawierać kolekcje</td>
+                    <td><h:selectBooleanCheckbox id="mc_cat_canContainCollections" value="#{controller.category.canContainCollections}"
+                                                 disabled="true"/></td>
+                </tr>
+
+                <tr>
+                    <td>Miniaturka</td>
+                    <td>
+                        <ui:include src="/WEB-INF/templates/renderIcon.xhtml">
+                            <ui:param name="icon" value="#{controller.category.image}" />
+                        </ui:include>
+                    </td>
+                </tr>
+
+            </table>
+            <h:link outcome="/category/updateCategory" styleClass="btn btn-primary">
+                <f:param name="id" value="#{controller.category.id}" />
+                <h:graphicImage value="/resources/gfx/icons/edit_16.png"/>
+                Zmień
+            </h:link>
+
+            <br/>
+            <b>Podkategorie</b>
+            <ul>
+                <ui:repeat var="subCategory" value="#{controller.category.subCategories}" varStatus="status">
+                    <li>
+                        <h:link value="#{subCategory.name}" outcome="manageCategory" >
+                            <f:param name="id" value="#{subCategory.id}" />
+                        </h:link>
+                    </li>
+                </ui:repeat>
+            </ul>
+
+            <h:link outcome="/category/createCategory" styleClass="btn btn-primary">
+                <f:param name="parent" value="#{controller.category.id}" />
+                <h:graphicImage value="/resources/gfx/icons/check_16.png"/>
+                Dodaj podkategorię
+            </h:link>
+
+            <br/>
+            <br/>
+            <strong>Szablony atrybutów kolekcji</strong>
+            <table class="ca-table">
+                <tr>
+                    <th/>
+                    <th>Typ</th>
+                    <th>Nazwa</th>
+                </tr>
+                <tbody>
+                <ui:repeat var="collectionAttrTemplate" value="#{controller.category.collectionTemplate}" varStatus="status">
+                    <tr>
+                        <td>
+                            <h:link outcome="/attribute/template/deleteCollectionAttributeTemplate" styleClass="action-td">
+                                <f:param name="id" value="#{collectionAttrTemplate.id}" />
+                                <h:graphicImage value="/resources/gfx/icons/delete_16.png"/>
+                                Usuń
+                            </h:link>
+                        </td>
+                        <td><h:outputText value="#{collectionAttrTemplate.type.label}"/></td>
+                        <td>
+                            <h:link value="#{collectionAttrTemplate.name}" outcome="/attribute/template/readCollectionAttributeTemplate" >
+                                <f:param name="id" value="#{collectionAttrTemplate.id}" />
+                            </h:link>
+                        </td>
+                    </tr>
+                </ui:repeat>
+                </tbody>
+            </table>
+
+            <br/>
+            <strong>Szablony atrybutów elementu</strong>
+            <table class="ca-table">
+                <tr>
+                    <th/>
+                    <th>Typ</th>
+                    <th>Nazwa</th>
+                </tr>
+                <tbody>
+                    <ui:repeat var="elementAttrTemplate" value="#{controller.category.elementTemplate}" varStatus="status">
+                        <tr>
+                            <td>
+                                <h:link outcome="/attribute/template/deleteElementAttributeTemplate" styleClass="action-td">
+                                    <f:param name="id" value="#{elementAttrTemplate.id}" />
+                                    <h:graphicImage value="/resources/gfx/icons/delete_16.png"/>
+                                    Usuń
+                                </h:link>
+                            </td>
+                            <td><h:outputText value="#{elementAttrTemplate.type.label}"/></td>
+                            <td>
+                                <h:link value="#{elementAttrTemplate.name}" outcome="/attribute/template/readElementAttributeTemplate" >
+                                    <f:param name="id" value="#{elementAttrTemplate.id}" />
+                                </h:link>
+                            </td>
+                        </tr>
+                    </ui:repeat>
+                </tbody>
+            </table>
+
+            <h:link outcome="/attribute/template/createAttributeTemplate" styleClass="btn btn-primary">
+                <f:param name="category" value="#{controller.category.id}" />
+                <h:graphicImage value="/resources/gfx/icons/check_16.png"/>
+                Dodaj szablon atrybutu
+            </h:link>
+
+        </div>
+
+    </ui:define>
+</ui:composition>

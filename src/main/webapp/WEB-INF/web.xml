@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="3.1"
+	xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+>
+
+<!--	<security-constraint>-->
+<!--		<display-name>Restrict direct access to the /resources folder.</display-name> &lt;!&ndash; We could have used javax.faces.WEBAPP_RESOURCES_DIRECTORY, but this doesn't cover resources from JARs. &ndash;&gt;-->
+<!--		<web-resource-collection>-->
+<!--			<web-resource-name>The /resources folder.</web-resource-name>-->
+<!--			<url-pattern>/resources/*</url-pattern>-->
+<!--		</web-resource-collection>-->
+<!--		<auth-constraint />-->
+<!--	</security-constraint>-->
+
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>Admin pages</web-resource-name>
+			<url-pattern>/admin/*</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>ADMIN</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>Logged user pages</web-resource-name>
+			<url-pattern>/user/profile.xhtml</url-pattern>
+			<url-pattern>/collection/createCollection.xhtml</url-pattern>
+			<!--			<url-pattern>/collection/manage.xhtml</url-pattern>-->
+			<!--			etc... add more patterns here -->
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>USER</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<security-role>
+		<role-name>USER</role-name>
+	</security-role>
+	<security-role>
+		<role-name>ADMIN</role-name>
+	</security-role>
+
+<!--	<context-param>-->
+<!--		<param-name>primefaces.THEME</param-name>-->
+<!--		<param-value>bootstrap</param-value>-->
+<!--	</context-param>-->
+
+	<servlet>
+		<servlet-name>facesServlet</servlet-name>
+		<servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<!-- Enable REST API-->
+	<servlet-mapping>
+		<servlet-name>javax.ws.rs.core.Application</servlet-name>
+		<url-pattern>/api/*</url-pattern>
+	</servlet-mapping>
+
+	<!-- Enable WEB pages -->
+	<servlet-mapping>
+		<servlet-name>facesServlet</servlet-name>
+		<url-pattern>*.xhtml</url-pattern>
+	</servlet-mapping>
+
+	<welcome-file-list>
+		<welcome-file>index.xhtml</welcome-file>
+	</welcome-file-list>
+
+</web-app>

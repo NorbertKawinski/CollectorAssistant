@@ -1,0 +1,86 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:of="http://omnifaces.org/functions"
+                xmlns:p="http://primefaces.org/ui"
+>
+    <ui:param name="caPageName" value="Profil" />
+
+    <ui:define name="custom_stylesheets">
+        <h:outputStylesheet name="css/profile.css"/>
+    </ui:define>
+
+    <ui:define name="main">
+        <c:set var="controller" value="#{profileController}" />
+        <f:metadata>
+            <f:viewParam name="id"/>
+        </f:metadata>
+
+        <p>
+            Przeglądasz profil użytkownika, <strong><h:outputText value="#{controller.user.name}" /></strong>!<br/>
+            <ui:include src="/WEB-INF/templates/renderImage.xhtml">
+                <ui:param name="image" value="#{controller.user.image}" />
+            </ui:include>
+        </p>
+        <h:link rendered="#{accessController.canEdit(controller.user)}"
+                outcome="/user/preferences" styleClass="btn btn-primary">
+            <f:param name="id" value="#{controller.user.id}" />
+            <h:graphicImage value="/resources/gfx/icons/edit_16.png"/>
+            Preferencje
+        </h:link>
+
+        <br/>
+        Dostępne formy kontaktu:<br/>
+        <ul>
+            <ui:fragment rendered="#{not empty controller.user.userDetails.contactEmail}" >
+                <li><h:outputText value="E-mail: #{controller.user.userDetails.contactEmail}" /></li>
+            </ui:fragment>
+            <ui:fragment rendered="#{not empty controller.user.userDetails.facebook}" >
+                <li><h:outputText value="Facebook: #{controller.user.userDetails.facebook}" /></li>
+            </ui:fragment>
+            <ui:fragment rendered="#{not empty controller.user.userDetails.skype}" >
+                <li><h:outputText value="Skype: #{controller.user.userDetails.skype}" /></li>
+            </ui:fragment>
+            <ui:fragment rendered="#{empty controller.user.userDetails.contactEmail and empty controller.user.userDetails.facebook and empty controller.user.userDetails.skype}" >
+                <li><h:outputText value="Brak" /></li>
+            </ui:fragment>
+        </ul>
+
+        <ui:fragment rendered="#{not empty controller.user.userDetails.aboutMe}" >
+            <p>
+                O użytkowniku:<br/>
+                <span style="white-space: pre;">
+                    <h:outputText value="#{controller.user.userDetails.aboutMe}"/>
+                </span>
+            </p>
+        </ui:fragment>
+
+        <strong>Kolekcje</strong><br/>
+        <c:choose>
+            <c:when test="#{empty controller.collections}">
+                Ten użytkownik nie posiada żadnych kolekcji<br/>
+            </c:when>
+            <c:otherwise>
+                <table class="ca-table">
+                    <ui:repeat var="collection" value="#{controller.collections}" varStatus="status">
+                        <tr>
+                            <td>#{status.index+1}</td>
+                            <td>
+                                <ui:include src="/WEB-INF/templates/renderCollection.xhtml">
+                                    <ui:param name="collection" value="#{collection}" />
+                                </ui:include>
+                            </td>
+                        </tr>
+                    </ui:repeat>
+                </table>
+            </c:otherwise>
+        </c:choose>
+
+    </ui:define>
+</ui:composition>

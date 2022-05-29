@@ -1,0 +1,229 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:of="http://omnifaces.org/functions"
+                xmlns:p="http://primefaces.org/ui"
+>
+    <ui:param name="caPageName" value="Kolekcja - Szczegóły" />
+
+    <ui:define name="main">
+        <c:set var="controller" value="#{readCollectionController}" />
+        <f:metadata>
+            <f:viewParam name="id"/>
+        </f:metadata>
+
+        <strong>Oglądasz kolekcję:<br/></strong>
+        <ui:include src="/WEB-INF/templates/renderImage.xhtml">
+            <ui:param name="image" value="#{controller.collection.image}" />
+        </ui:include>
+
+        <table class="ca-table">
+            <tr>
+                <td>Id</td>
+                <td><h:outputText value="#{controller.collection.id}"/></td>
+            </tr>
+            <tr>
+                <td>Nazwa</td>
+                <td><h:outputText id="collection-name" value="#{controller.collection.name}"/></td>
+            </tr>
+            <tr>
+                <td>Właściciel</td>
+                <td>
+                    <ui:include src="/WEB-INF/templates/renderUser.xhtml">
+                        <ui:param name="user" value="#{controller.collection.owner}" />
+                    </ui:include>
+                </td>
+            </tr>
+            <tr>
+                <td>Kategoria</td>
+                <td>
+                    <ui:include src="/WEB-INF/templates/renderCategory.xhtml">
+                        <ui:param name="category" value="#{controller.collection.category}" />
+                    </ui:include>
+                </td>
+            </tr>
+            <tr>
+                <td>Widoczność</td>
+                <td><h:outputText value="#{controller.collection.visibility.label}"/></td>
+            </tr>
+            <tr>
+                <td>Bazuje na katalogu</td>
+                <td>
+                    <c:choose>
+                        <c:when test="#{controller.collection.containsBase()}">
+                            <ui:include src="/WEB-INF/templates/renderCollection.xhtml">
+                                <ui:param name="collection" value="#{controller.collection.basedOn}" />
+                            </ui:include>
+                        </c:when>
+                        <c:otherwise>
+                            Nie
+                        </c:otherwise>
+                    </c:choose>
+                </td>
+            </tr>
+            <tr>
+                <td>Miniaturka</td>
+                <td>
+                    <ui:include src="/WEB-INF/templates/renderIcon.xhtml">
+                        <ui:param name="icon" value="#{controller.collection.image}" />
+                    </ui:include>
+                </td>
+            </tr>
+        </table>
+        <h:link rendered="#{accessController.canEdit(controller.collection)}"
+                outcome="/collection/updateCollection" styleClass="btn btn-primary">
+            <f:param name="id" value="#{controller.collection.id}" />
+            <h:graphicImage value="/resources/gfx/icons/edit_16.png"/>
+            Zmień
+        </h:link>
+        <h:link rendered="#{accessController.canEdit(controller.collection)}"
+                outcome="/collection/deleteCollection" styleClass="btn btn-primary ml-2">
+            <f:param name="id" value="#{controller.collection.id}" />
+            <h:graphicImage value="/resources/gfx/icons/delete_16.png"/>
+            Usuń
+        </h:link>
+
+        <c:if test="#{controller.collection.catalog and accessController.loggedIn}">
+            <br/>
+            To jest katalog, aby rozpocząć kolekcjonawanie tego katalogu, kliknij w poniższy przycisk<br/>
+            <h:link outcome="/collection/createCollection" styleClass="btn btn-primary">
+                <f:param name="category" value="#{controller.collection.category.id}"/>
+                <f:param name="catalog" value="#{controller.collection.id}"/>
+                <h:graphicImage value="/resources/gfx/icons/check_16.png"/>
+                Rozpocznij kolekcjonowanie
+            </h:link>
+        </c:if>
+        <br/>
+
+        <br/>
+        <strong>Atrybuty</strong><br/>
+        <table class="ca-table">
+            <ui:repeat var="attribute" value="#{controller.collection.attributes}" varStatus="status">
+                <tr>
+                    <td>
+                        <h:link rendered="#{accessController.canEdit(attribute)}"
+                                outcome="/attribute/deleteCollectionAttribute" styleClass="action-td">
+                            <f:param name="id" value="#{attribute.id}" />
+                            <h:graphicImage value="/resources/gfx/icons/delete_16.png"/>
+                            Usuń
+                        </h:link>
+                    </td>
+                    <td>
+                        <h:link value="#{attribute.attributeTemplate.name}" outcome="/attribute/readCollectionAttribute" >
+                            <f:param name="id" value="#{attribute.id}" />
+                        </h:link>
+                    </td>
+
+                    <ui:include src="/WEB-INF/templates/displayAttributeCells.xhtml">
+                        <ui:param name="attributeValue" value="#{attribute.value}" />
+                    </ui:include>
+
+                </tr>
+            </ui:repeat>
+        </table>
+        <c:if test="#{accessController.canEdit(controller.collection)}">
+            <form id="add-attribute-form" method="get" action="${request.contextPath}/attribute/createCollectionAttribute.xhtml" class="mt-1">
+                <input name="collection" type="hidden" value="#{controller.collection.id}"/>
+                <h:panelGrid columns="3" styleClass="ca-table">
+                    <h:outputLabel for="template" value="Rodzaj"/>
+                    <h:selectOneMenu id="template" value="#{controller.selectedAddAttributeTemplateId}">
+                        <f:selectItems value="#{controller.attributeTemplates}"
+                                       var="cdat_template" itemValue="#{cdat_template.id}" itemLabel="#{cdat_template.name}"/>
+                    </h:selectOneMenu>
+                    <h:message for="template" errorClass="ca-invalid-feedback" />
+                </h:panelGrid>
+                <button type="submit" class="btn btn-primary">
+                    <h:graphicImage value="/resources/gfx/icons/check_16.png"/>
+                    Dodaj atrybut
+                </button>
+            </form>
+        </c:if>
+
+        <br/>
+        <b>Elementy</b><br/>
+        <c:choose>
+            <c:when test="#{empty controller.elements.list}">
+                Brak<br/>
+            </c:when>
+            <c:otherwise>
+                <table class="ca-table">
+                    <ui:repeat var="element" value="#{controller.elements.list}" varStatus="status">
+                        <tr>
+                            <ui:fragment rendered="#{accessController.canEdit(controller.collection)}">
+                                <td>
+                                    <h:link outcome="/element/deleteElement" styleClass="action-td">
+                                        <f:param name="id" value="#{element.id}" />
+                                        <h:graphicImage value="/resources/gfx/icons/delete_16.png"/>
+                                        Usuń
+                                    </h:link>
+                                </td>
+                            </ui:fragment>
+                            <td>#{controller.elements.recordsFrom + status.index}</td>
+                            <td>
+                                <ui:include src="/WEB-INF/templates/renderElement.xhtml">
+                                    <ui:param name="element" value="#{element}" />
+                                </ui:include>
+                            </td>
+                        </tr>
+                    </ui:repeat>
+                </table>
+            </c:otherwise>
+        </c:choose>
+        <ui:include src="/WEB-INF/templates/renderPages.xhtml">
+            <ui:param name="outcome" value="/collection/readCollection" />
+            <ui:param name="id" value="#{controller.collection.id}" />
+            <ui:param name="pagedResult" value="#{controller.elements}" />
+        </ui:include>
+        <br/>
+        <c:if test="#{accessController.canEdit(controller.collection)}">
+            <h:link outcome="/element/createElement" styleClass="btn btn-primary">
+                <f:param name="collection" value="#{controller.collection.id}"/>
+                <h:graphicImage value="/resources/gfx/icons/check_16.png"/>
+                Dodaj element
+            </h:link>
+            <br/>
+        </c:if>
+        <br/>
+        <br/>
+
+        <c:if test="#{controller.collection.containsBase()}">
+            <br/>
+            <strong>Brakujące elementy z katalogu</strong><br/>
+            <c:choose>
+                <c:when test="#{empty controller.missingElements}">
+                    Brak, ta kolekcja posiada wszystkie elementy z katalogu<br/>
+                </c:when>
+                <c:otherwise>
+                    <table class="ca-table">
+                        <ui:repeat var="element" value="#{controller.missingElements}" varStatus="status">
+                            <tr>
+                                <td>
+                                    <h:link rendered="#{accessController.canEdit(controller.collection)}"
+                                            outcome="/element/createElement" styleClass="action-td">
+                                        <f:param name="collection" value="#{controller.collection.id}"/>
+                                        <f:param name="basedOn" value="#{element.id}"/>
+                                        <h:graphicImage value="/resources/gfx/icons/check_16.png"/>
+                                        Dodaj
+                                    </h:link>
+                                </td>
+                                <td>#{status.index+1}</td>
+                                <td>
+                                    <ui:include src="/WEB-INF/templates/renderElement.xhtml">
+                                        <ui:param name="element" value="#{element}" />
+                                    </ui:include>
+                                </td>
+                            </tr>
+                        </ui:repeat>
+                    </table>
+                </c:otherwise>
+            </c:choose>
+        </c:if>
+
+    </ui:define>
+</ui:composition>

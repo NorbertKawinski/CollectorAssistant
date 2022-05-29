@@ -1,0 +1,55 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:of="http://omnifaces.org/functions"
+                xmlns:p="http://primefaces.org/ui"
+    >
+    <ui:param name="caPageName" value="Rejestracja" />
+
+    <ui:define name="main">
+        <c:set var="controller" value="#{registerController}" />
+        <h2>User Registration</h2>
+        <p>You can register using the form below</p>
+
+        <h:form id="registerForm">
+            <h:panelGrid columns="3" styleClass="ca-table" columnClasses="titleCell">
+                <h:outputLabel for="username" value="Nazwa konta:" />
+                <h:inputText id="username" value="#{controller.newUser.name}" />
+                <h:message for="username" errorClass="ca-invalid-feedback" />
+
+                <h:outputLabel for="email" value="Adres e-mail:" />
+                <h:inputText id="email" value="#{controller.newUser.email}" />
+                <h:message for="email" errorClass="ca-invalid-feedback" />
+
+                <h:outputLabel for="password" value="Hasło:" />
+                <h:inputSecret id="password"
+                               value="#{controller.newUser.password}" />
+                <h:message for="password" errorClass="ca-invalid-feedback" />
+
+                <h:outputLabel for="passwordRepeat" value="Powtórz hasło:" />
+                <h:inputSecret id="passwordRepeat"
+                               value="#{controller.newUser.passwordRepeat}"
+                                validator="${controller.validatePasswordMatch}"/>
+                <h:message for="passwordRepeat" errorClass="ca-invalid-feedback" />
+
+                <h:outputLabel for="rules" value="Akceptuję regulamin:" />
+                <h:selectBooleanCheckbox id="rules"
+                               value="#{controller.newUser.acceptRules}" />
+                <h:message for="rules" errorClass="ca-invalid-feedback" />
+
+            </h:panelGrid>
+
+            <h:panelGrid columns="2" styleClass="ca-table">
+                <h:commandButton id="registerButton" action="#{controller.register}" styleClass="btn btn-success"
+                                 value="Register" />
+            </h:panelGrid>
+        </h:form>
+
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,34 @@
+
+Sites who do that:
+- TinEye
+- Google image search
+
+Libs who do that:
+- pHash
+- https://github.com/EdjoLabs/image-match
+	* https://www.youtube.com/watch?v=DfWLBzArzKE
+	* (WE WANT TO COMPARE) perceptual similarity as opposed to content-based similarity (https://up.kawinski.net/firefox_2020-10-13_18-36-20.png)
+	* Focused(?) on searching many (billions) images quickly
+	* Works by generating image signatures (https://up.kawinski.net/firefox_2020-10-13_18-39-13.png)
+	* Difference/similarity is a vector difference from the signature (https://up.kawinski.net/firefox_2020-10-13_18-41-13.png)
+	* Robust against a *small*: light change, cropping, rotation (up to 3 degrees), modifications
+	* 
+
+
+https://stackoverflow.com/questions/11541154/checking-images-for-similarity-with-opencv
+(MAYBE) Comparing histograms
+
+https://stackoverflow.com/a/45485883
+Patrz tylko tą konkretną odpowiedź.
+	Fajny pomysł na połączenie kilku metod
+	
+https://stackoverflow.com/questions/4196453/simple-and-fast-method-to-compare-images-for-similarity
+	Dunno, może tu coś jest fajnego
+
+(BAD) compare_ssim - The Structural Similarity Index (SSIM) is a perceptual metric that quantifies the image quality degradation 
+	that is caused by processing such as data compression or by losses in data transmission. 
+	This metric is basically a full reference that requires 2 images from the same shot, this means 2 graphically identical images to the human eye. 
+	The second image generally is compressed or has a different quality, which is the goal of this index
+
+
+

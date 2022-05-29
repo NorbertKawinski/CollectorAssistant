@@ -1,0 +1,13 @@
+class Pokemon%POKEMON_NATIONAL_NUMBER% extends ElePokemonBase {
+	public Pokemon%POKEMON_NATIONAL_NUMBER%(final ColPokedex collection) {
+		super(collection, "%POKEMON_NAME%");
+		addBase("pokemon\\pokemon_%POKEMON_NATIONAL_NUMBER%_icon.png", "pokemon\\pokemon_%POKEMON_NATIONAL_NUMBER%.png", "%POKEMON_NATIONAL_NUMBER%", "%POKEMON_SPECIES%", "%POKEMON_HEIGHT%", "%POKEMON_WEIGHT%");
+		addTypes(%POKEMON_TYPES%);
+		addAbilities(%POKEMON_ABILITIES%);
+		addEvolution("%POKEMON_EVOLVED_FROM%", "%POKEMON_EVOLVES_INTO%");
+		addStats("%POKEMON_BASE_TOTAL%", "%POKEMON_BASE_HP%", "%POKEMON_BASE_ATTACK%", "%POKEMON_BASE_DEFENSE%", "%POKEMON_BASE_ATTACK_SPEED%", "%POKEMON_BASE_DEFENSE_SPEED%", "%POKEMON_BASE_SPEED%");
+		addDetails("%POKEMON_DESCRIPTION%");
+	}
+}
+pokemonsByNN.put("%POKEMON_NATIONAL_NUMBER%", new Pokemon%POKEMON_NATIONAL_NUMBER%(this));
+

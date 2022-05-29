@@ -1,0 +1,158 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:of="http://omnifaces.org/functions"
+                xmlns:p="http://primefaces.org/ui"
+>
+    <ui:param name="caPageName" value="Kolekcja - Szczegóły" />
+
+    <ui:define name="main">
+        <c:set var="controller" value="#{readElementController}" />
+        <f:metadata>
+            <f:viewParam name="id"/>
+        </f:metadata>
+
+        <strong>Oglądasz element:<br/></strong>
+        <ui:include src="/WEB-INF/templates/renderImage.xhtml">
+            <ui:param name="image" value="#{controller.element.image}" />
+        </ui:include>
+
+        <table class="ca-table">
+            <tr>
+                <td>Id</td>
+                <td><h:outputText value="#{controller.element.id}"/></td>
+            </tr>
+            <tr>
+                <td>Nazwa</td>
+                <td><h:outputText id="element-name" value="#{controller.element.name}"/></td>
+            </tr>
+            <tr>
+                <td>Należy do kolekcji</td>
+                <td>
+                    <ui:include src="/WEB-INF/templates/renderCollection.xhtml">
+                        <ui:param name="collection" value="#{controller.element.presentIn}" />
+                    </ui:include>
+                </td>
+            </tr>
+            <tr>
+                <td>Właściciel</td>
+                <td>
+                    <ui:include src="/WEB-INF/templates/renderUser.xhtml">
+                        <ui:param name="user" value="#{controller.element.presentIn.owner}" />
+                    </ui:include>
+                </td>
+            </tr>
+            <tr>
+                <td>Kategoria</td>
+                <td>
+                    <ui:include src="/WEB-INF/templates/renderCategory.xhtml">
+                        <ui:param name="category" value="#{controller.element.category}" />
+                    </ui:include>
+                </td>
+            </tr>
+            <tr>
+                <td>Bazuje na elemencie</td>
+                <td>
+                    <c:choose>
+                        <c:when test="#{controller.element.containsBase()}">
+                            <h:link value="#{controller.element.basedOn.name}" outcome="/element/readElement" >
+                                <f:param name="id" value="#{controller.element.basedOn.id}" />
+                            </h:link>
+                        </c:when>
+                        <c:otherwise>
+                            Nie
+                        </c:otherwise>
+                    </c:choose>
+                </td>
+            </tr>
+            <tr>
+                <td>Miniaturka</td>
+                <td>
+                    <ui:include src="/WEB-INF/templates/renderIcon.xhtml">
+                        <ui:param name="icon" value="#{controller.element.image}" />
+                    </ui:include>
+                </td>
+            </tr>
+        </table>
+        <h:link rendered="#{accessController.canEdit(controller.element)}"
+                outcome="/element/updateElement" styleClass="btn btn-primary">
+            <f:param name="id" value="#{controller.element.id}" />
+            <h:graphicImage value="/resources/gfx/icons/edit_16.png"/>
+            Zmień
+        </h:link>
+        <h:link rendered="#{accessController.canEdit(controller.element)}"
+                outcome="/element/deleteElement" styleClass="btn btn-primary ml-2">
+            <f:param name="id" value="#{controller.element.id}"/>
+            <h:graphicImage value="/resources/gfx/icons/delete_16.png"/>
+            Usuń
+        </h:link>
+
+        <br/>
+        <strong>Atrybuty</strong><br/>
+        <table class="ca-table">
+            <ui:repeat var="attribute" value="#{controller.element.attributes}" varStatus="status">
+                <tr>
+                    <td>
+                        <h:link rendered="#{accessController.canEdit(attribute)}"
+                                outcome="/attribute/deleteElementAttribute" styleClass="action-td">
+                            <f:param name="id" value="#{attribute.id}" />
+                            <h:graphicImage value="/resources/gfx/icons/delete_16.png"/>
+                            Usuń
+                        </h:link>
+                    </td>
+                    <td>
+                        <h:link value="#{attribute.attributeTemplate.name}" outcome="/attribute/readElementAttribute" >
+                            <f:param name="id" value="#{attribute.id}" />
+                        </h:link>
+                    </td>
+
+                    <ui:include src="/WEB-INF/templates/displayAttributeCells.xhtml">
+                        <ui:param name="attributeValue" value="#{attribute.value}" />
+                    </ui:include>
+
+                </tr>
+            </ui:repeat>
+        </table>
+        <c:if test="#{accessController.canEdit(controller.element)}">
+            <form id="add-attribute-form" method="get" action="${request.contextPath}/attribute/createElementAttribute.xhtml" class="mt-1">
+                <h:panelGrid columns="6" styleClass="ca-table">
+                    <h:outputLabel for="template" value="Rodzaj"/>
+                    <h:selectOneMenu id="template" value="#{controller.selectedAddAttributeTemplateId}">
+                        <f:selectItems value="#{controller.attributeTemplates}"
+                                       var="cdat_template" itemValue="#{cdat_template.id}" itemLabel="#{cdat_template.name}"/>
+                    </h:selectOneMenu>
+                    <h:message for="template" errorClass="ca-invalid-feedback" />
+
+                    <input name="element" type="hidden" value="#{controller.element.id}"/>
+                </h:panelGrid>
+                <button type="submit" class="btn btn-primary">
+                    <h:graphicImage value="/resources/gfx/icons/check_16.png"/>
+                    Dodaj atrybut
+                </button>
+            </form>
+        </c:if>
+
+<!--        TODO: Zamiast tego dodac liste: "Posiadany przez" (w przypadku, gdy ten element jest baza dla innych elementow) -->
+<!--        <br/>-->
+<!--        <b>Używany w kolekcjach</b><br/>-->
+<!--        <table class="ca-table">-->
+<!--            <ui:repeat var="collection" value="#{controller.element.presentIn}" varStatus="status">-->
+<!--                <tr>-->
+<!--                    <td><h:outputText value="#{collection.id}" /></td>-->
+<!--                    <td>-->
+<!--                        <h:link value="#{collection.name}" outcome="/collection/readCollection" >-->
+<!--                            <f:param name="id" value="#{collection.id}" />-->
+<!--                        </h:link>-->
+<!--                    </td>-->
+<!--                </tr>-->
+<!--            </ui:repeat>-->
+<!--        </table>-->
+
+    </ui:define>
+</ui:composition>

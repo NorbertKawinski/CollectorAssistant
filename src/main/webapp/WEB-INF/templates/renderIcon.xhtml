@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+      xmlns:o="http://omnifaces.org/ui"
+      xmlns:of="http://omnifaces.org/functions"
+      xmlns:p="http://primefaces.org/ui">
+<!-- JSF parameters -->
+<!--@elvariable id="icon" type="net.kawinski.collecting.data.model.ImageModel" -->
+<h:body>
+
+    <h:graphicImage styleClass="ca-icon" value="#{mediaController.getUrlFor(icon.iconOrImage)}" alt="Miniaturka"
+                    rendered="#{icon.hasImageOrIcon}"/>
+
+    <h:graphicImage styleClass="ca-icon" value="/resources/gfx/icons/transparent_16.png" alt="Miniaturka"
+                    rendered="#{!icon.hasImageOrIcon}"/>
+
+</h:body>
+</html>

@@ -1,0 +1,75 @@
+version: '3'
+services:
+
+  mariadb:
+    container_name: ca_mariadb
+    image: "mariadb"
+    ports:
+      - "12002:3306"
+    environment:
+      - "MYSQL_ROOT_PASSWORD=123456"
+      - "MYSQL_DATABASE=collector_assistant"
+      - "MYSQL_USER=cadb"
+      - "MYSQL_PASSWORD=cadb1234"
+    restart: unless-stopped
+
+  mariadb_backup:
+    container_name: ca_mariadb_backup
+    image: databack/mysql-backup
+    volumes:
+      - ./volumes/mariadb_backups:/db
+    environment:
+      - DB_DUMP_TARGET=/db
+      - DB_SERVER=mariadb
+      - DB_USER=cadb
+      - DB_PASS=cadb1234
+      - DB_DUMP_FREQ=60
+      - DB_DUMP_BEGIN=+10
+    restart: unless-stopped
+
+  app_server:
+    build:
+      context: ./resources/CollectorAssistant
+      dockerfile: Dockerfile
+      args:
+        - "NK_WILDFLY_ADMIN_USER=admin"
+        - "NK_WILDFLY_ADMIN_PASS=123456"
+        - "NK_WILDFLY_MYSQL_CONNECTOR_NAME=mysql-connector-java-8.0.20.jar"
+        - "NK_WILDFLY_LOGGER_PATTERN=%K{level}%d{HH:mm:ss,SSS} [%t] %5p %X{indent} %s%e{} o.o(%F:%L)%n"
+        - "NK_CA_ARTIFACT_NAME=collector-assistant.war"
+        - "NK_CA_DATASOURCE_JNDI_NAME=java:/collectorapp/datasources/MainDS"
+        - "NK_CA_DATASOURCE_HOST_NAME=mariadb"
+        - "NK_CA_DATASOURCE_PORT=3306"
+        - "NK_CA_DATASOURCE_SCHEMA=collector_assistant?serverTimezone=UTC\\&useUnicode=yes\\&characterEncoding=UTF-8"
+        - "NK_CA_DATASOURCE_USER=cadb"
+        - "NK_CA_DATASOURCE_PASS=cadb1234"
+    container_name: ca_server
+    #image: collector_assistant
+    ports:
+      # Default webserver port
+      - "12000:8080"
+      # Admin web panel port
+#      - "12001:9990"
+    environment:
+      - "ALQ_ENV=PROD"
+    volumes:
+      - ./volumes/ca_uploads:/ca_uploads
+    depends_on:
+      - mariadb
+    restart: unless-stopped
+
+  elasticsearch:
+    container_name: ca_elasticsearch
+    image: "elasticsearch:7.9.2"
+    environment:
+      - "xpack.ml.enabled=false"
+      - "discovery.type=single-node"
+    restart: unless-stopped
+
+  ca_imagematch_server:
+    container_name: ca_imagematch_server
+    build:
+      context: ./resources/CollectorAssistantImageMatch
+    ports:
+      - "12003:5000"
+    restart: unless-stopped

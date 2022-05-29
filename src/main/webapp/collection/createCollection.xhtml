@@ -1,0 +1,63 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:of="http://omnifaces.org/functions"
+                xmlns:p="http://primefaces.org/ui"
+>
+    <ui:param name="caPageName" value="Dodawanie kolekcji" />
+
+    <ui:define name="main">
+        <c:set var="controller" value="#{createCollectionController}" />
+        <f:metadata>
+            <f:viewParam name="category"/>
+            <f:viewParam name="catalog"/>
+        </f:metadata>
+
+        <strong>
+            Dodawanie kolekcji w kategorii
+            <ui:include src="/WEB-INF/templates/renderCategory.xhtml">
+                <ui:param name="category" value="#{controller.category}" />
+            </ui:include>
+        </strong>
+        <br/>
+
+        <c:if test="#{controller.form.basedOnId != null}">
+            <strong>
+                Na podstawie katalogu
+                <ui:include src="/WEB-INF/templates/renderCollection.xhtml">
+                    <ui:param name="collection" value="#{controller.basedOn}" />
+                </ui:include>
+            </strong>
+            <br/>
+        </c:if>
+
+        <o:form id="form" includeViewParams="true">
+            <h:inputHidden id="cc_category" value="#{controller.form.categoryId}"/>
+            <h:inputHidden id="cc_catalog" value="#{controller.form.basedOnId}"/>
+            <h:panelGrid columns="3" styleClass="ca-table">
+                <h:outputLabel for="cc_name" value="Nazwa:" />
+                <h:inputText id="cc_name" value="#{controller.form.name}" />
+                <h:message for="cc_name" errorClass="ca-invalid-feedback" />
+
+                <h:outputLabel for="cc_is_catalog" value="Czy katalog:" />
+                <h:selectBooleanCheckbox id="cc_is_catalog" value="#{controller.form.catalog}" />
+                <h:message for="cc_is_catalog" errorClass="ca-invalid-feedback" />
+            </h:panelGrid>
+
+            <h:panelGrid columns="2" styleClass="ca-table">
+                <h:commandLink styleClass="btn btn-success" action="#{controller.create}">
+                    <h:graphicImage value="/resources/gfx/icons/check_16.png"/>
+                    Dodaj
+                </h:commandLink>
+            </h:panelGrid>
+        </o:form>
+
+    </ui:define>
+
+</ui:composition>

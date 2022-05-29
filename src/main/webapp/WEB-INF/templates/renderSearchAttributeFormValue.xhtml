@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+      xmlns:o="http://omnifaces.org/ui"
+      xmlns:of="http://omnifaces.org/functions"
+      xmlns:p="http://primefaces.org/ui">
+<!-- JSF parameters -->
+<!--@elvariable id="searchAttr" type="net.kawinski.collecting.presentation.controllers.search.SearchAttributeFormJsf" -->
+<h:body>
+
+    <h:panelGroup id="search-attribute-form-value">
+
+        <h:panelGroup id="search-attribute-form-value-single" rendered="#{searchAttr.singleValue}">
+            <ui:include src="/WEB-INF/templates/editAttributeValue.xhtml">
+                <ui:param name="form" value="#{searchAttr.valueControllerMain}" />
+                <ui:param name="fieldId" value="sc_attr_val_main" />
+                <ui:param name="attributeType" value="#{searchAttr.type}" />
+                <ui:param name="triStateBoolean" value="#{true}" />
+            </ui:include>
+        </h:panelGroup>
+
+        <h:panelGroup id="search-attribute-form-value-multi" rendered="#{searchAttr.multiValue}">
+            od:
+            <ui:include src="/WEB-INF/templates/editAttributeValue.xhtml">
+                <ui:param name="form" value="#{searchAttr.valueControllerFrom}" />
+                <ui:param name="fieldId" value="sc_attr_val_from" />
+                <ui:param name="attributeType" value="#{searchAttr.type}" />
+                <ui:param name="triStateBoolean" value="#{true}" />
+            </ui:include>
+            <br/>
+
+            do:
+            <ui:include src="/WEB-INF/templates/editAttributeValue.xhtml">
+                <ui:param name="form" value="#{searchAttr.valueControllerTo}" />
+                <ui:param name="fieldId" value="sc_attr_val_to" />
+                <ui:param name="attributeType" value="#{searchAttr.type}" />
+                <ui:param name="triStateBoolean" value="#{true}" />
+            </ui:include>
+        </h:panelGroup>
+
+    </h:panelGroup>
+
+</h:body>
+</html>

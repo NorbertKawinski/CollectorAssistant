@@ -1,0 +1,1 @@
+dir /B cats > cats.txt

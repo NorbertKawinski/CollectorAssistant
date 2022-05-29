@@ -1,0 +1,7 @@
+# Set EOL to lf for .sh scripts and crlf for Powershell
+*.sh text eol=lf
+*.ps text eol=crlf
+
+# Set lf for WildFly .cli that's running on Linux
+docker/resources/CollectorAssistant/install/wildfly.cli text eol=lf
+docker/resources/CollectorAssistantTest/install/wildfly.cli text eol=lf

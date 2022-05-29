@@ -1,0 +1,68 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:of="http://omnifaces.org/functions"
+                xmlns:p="http://primefaces.org/ui"
+>
+    <ui:param name="caPageName" value="Zmieniasz szablon atrybutu kolekcji" />
+
+    <ui:define name="main">
+        <c:set var="controller" value="#{updateCollectionAttributeTemplateController}" />
+        <f:metadata>
+            <f:viewParam name="id"/>
+        </f:metadata>
+
+        <strong>Edytujesz szablon atrybutu kolekcji:<br/></strong>
+        <o:form includeViewParams="true">
+            <table class="ca-table">
+                <tr>
+                    <td>Id</td>
+                    <td><h:outputText value="#{controller.attribute.id}"/></td>
+                </tr>
+                <tr>
+                    <td>Nazwa</td>
+                    <td><h:inputText id="entityName" value="#{controller.attribute.name}" styleClass="input-td"/></td>
+                    <td><h:message for="entityName" errorClass="ca-invalid-feedback"/></td>
+                </tr>
+                <tr>
+                    <td>Rodzaj</td>
+                    <td><h:outputText value="#{controller.attribute.type}"/></td>
+                </tr>
+                <tr>
+                    <td>Kategoria</td>
+                    <td>
+                        <ui:include src="/WEB-INF/templates/renderCategory.xhtml">
+                            <ui:param name="category" value="#{controller.attribute.category}" />
+                        </ui:include>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Kolejność wyświetlania</td>
+                    <td><h:inputText id="entityDisplayOrder" value="#{controller.attribute.displayOrder}"/></td>
+                    <td><h:message for="entityDisplayOrder" errorClass="ca-invalid-feedback"/></td>
+                </tr>
+                <tr>
+                    <td>Wyszukiwalne</td>
+                    <td><h:selectBooleanCheckbox id="entitySearchable" value="#{controller.attribute.searchable}"/></td>
+                    <td><h:message for="entitySearchable" errorClass="ca-invalid-feedback"/></td>
+                </tr>
+            </table>
+            <h:commandLink action="#{controller.update}" styleClass="btn btn-primary">
+                <h:graphicImage value="/resources/gfx/icons/edit_16.png"/>
+                Zmień
+            </h:commandLink>
+            <h:link outcome="/attribute/template/deleteCollectionAttributeTemplate" styleClass="btn btn-primary ml-2">
+                <f:param name="id" value="#{controller.attribute.id}" />
+                <h:graphicImage value="/resources/gfx/icons/delete_16.png"/>
+                Usuń
+            </h:link>
+        </o:form>
+
+    </ui:define>
+</ui:composition>

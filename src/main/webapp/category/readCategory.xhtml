@@ -1,0 +1,113 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:of="http://omnifaces.org/functions"
+                xmlns:p="http://primefaces.org/ui"
+>
+    <ui:param name="caPageName" value="Przegląd kategorii ${readCategoryController.category.name}" />
+
+    <ui:define name="main">
+        <c:set var="controller" value="#{readCategoryController}" />
+        <f:metadata>
+            <f:viewParam name="id"/>
+        </f:metadata>
+
+        Witamy w kategorii <strong>${controller.category.name}</strong>.<br/>
+
+        <br/>
+        <strong>Kategoria nadrzędna</strong><br/>
+        <c:choose>
+            <c:when test="#{controller.category.parent.present}">
+                <ui:include src="/WEB-INF/templates/renderCategory.xhtml">
+                    <ui:param name="category" value="#{controller.category.parent.get()}" />
+                </ui:include>
+            </c:when>
+            <c:otherwise>
+                Brak
+            </c:otherwise>
+        </c:choose>
+        <br/>
+
+        <br/>
+        <strong>Podkategorie</strong><br/>
+        <table class="ca-table">
+            <ui:repeat var="subCategory" value="#{controller.category.subCategories}" varStatus="status">
+                <tr>
+                    <td>#{status.index+1}</td>
+                    <ui:include src="/WEB-INF/templates/renderCategoryCells.xhtml">
+                        <ui:param name="category" value="#{subCategory}" />
+                    </ui:include>
+                </tr>
+            </ui:repeat>
+        </table>
+
+        <ul>
+
+        </ul>
+
+        <br/>
+        <strong>Szukaj kolekcji w tej kategorii</strong>
+        <form id="search-collections" method="get" action="${request.contextPath}/collection/searchCollections.xhtml">
+            <h:inputHidden id="id" type="hidden" value="#{controller.category.id}"/>
+            <h:inputText id="query" a:placeholder="Szukaj"/>
+            <button class="btn btn-primary" type="submit">
+                <h:graphicImage value="/resources/gfx/icons/search_16.png"/>
+                Szukaj
+            </button>
+        </form>
+        <br/>
+
+        <c:if test="#{controller.category.canContainCollections}">
+            <strong>Kolekcje</strong><br/>
+            <c:choose>
+                <c:when test="#{empty controller.collections.list}">
+                    Brak kolekcji<br/>
+                </c:when>
+                <c:otherwise>
+                    <table class="ca-table">
+                        <ui:repeat var="collection" value="#{controller.collections.list}" varStatus="status">
+                            <tr>
+                                <td>#{controller.collections.recordsFrom + status.index}</td>
+                                <td>
+                                    <ui:include src="/WEB-INF/templates/renderCollection.xhtml">
+                                        <ui:param name="collection" value="#{collection}" />
+                                    </ui:include>
+                                </td>
+                            </tr>
+                        </ui:repeat>
+                    </table>
+                </c:otherwise>
+            </c:choose>
+            <br/>
+
+            <ui:include src="/WEB-INF/templates/renderPages.xhtml">
+                <ui:param name="outcome" value="/category/readCategory" />
+                <ui:param name="id" value="#{controller.category.id}" />
+                <ui:param name="pagedResult" value="#{controller.collections}" />
+            </ui:include>
+            <br/>
+            <br/>
+
+            <c:choose>
+                <c:when test="#{loggedInUser.loggedIn}">
+                    <h:link outcome="/collection/createCollection" styleClass="btn btn-primary">
+                        <f:param name="category" value="#{controller.category.id}"/>
+                        <h:graphicImage value="/resources/gfx/icons/check_16.png"/>
+                        Utwórz kolekcję
+                    </h:link>
+                </c:when>
+                <c:otherwise>
+                    <!-- TODO: "login to continue" feature instead of redirecting to home page -->
+                    <h:link outcome="/user/login" value="Zaloguj się, aby utworzyć kolekcję" styleClass="btn btn-primary"/><br/>
+                </c:otherwise>
+            </c:choose>
+        </c:if>
+
+    </ui:define>
+</ui:composition>

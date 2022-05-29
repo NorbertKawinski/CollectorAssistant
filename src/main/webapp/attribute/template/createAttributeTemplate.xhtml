@@ -1,0 +1,68 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:of="http://omnifaces.org/functions"
+                xmlns:p="http://primefaces.org/ui"
+>
+    <ui:param name="caPageName" value="Dodawanie szablonu atrybutu"/>
+
+    <ui:define name="main">
+        <c:set var="controller" value="#{createAttributeTemplateController}" />
+        <f:metadata>
+            <f:viewParam name="category"/>
+        </f:metadata>
+
+        <strong>
+            <h:outputText value="Dodawanie szablonu atrybutu '#{controller.category.name}' do: "/>
+            <ui:include src="/WEB-INF/templates/renderCategory.xhtml">
+                <ui:param name="category" value="#{controller.category}" />
+            </ui:include>
+        </strong>
+
+        <b>Dodaj szablon atrybutu</b>
+        <o:form includeViewParams="true">
+            <h:inputHidden id="ncat_category" value="#{controller.form.categoryId}"/>
+
+            <h:panelGrid columns="3" styleClass="ca-table">
+                <h:outputLabel for="ncat_target" value="Szablon dla" />
+                <h:selectOneMenu id="ncat_target" value="#{controller.form.attributeTarget}">
+                    <f:selectItems value="#{controller.form.availableTargets}"
+                                   var="ncat_target_x" itemValue="#{ncat_target_x}" itemLabel="#{ncat_target_x.label}"/>
+                </h:selectOneMenu>
+                <h:message for="ncat_target" errorClass="ca-invalid-feedback" />
+
+                <h:outputLabel for="ncat_name" value="Nazwa" />
+                <h:inputText id="ncat_name" value="#{controller.form.name}" />
+                <h:message for="ncat_name" errorClass="ca-invalid-feedback" />
+
+                <h:outputLabel for="ncat_type" value="Rodzaj" />
+                <h:selectOneMenu id="ncat_type" value="#{controller.form.type}">
+                    <f:selectItems value="#{controller.form.availableTypes}"
+                                   var="ncat_type_x" itemValue="#{ncat_type_x}" itemLabel="#{ncat_type_x.label}"/>
+                </h:selectOneMenu>
+                <h:message for="ncat_type" errorClass="ca-invalid-feedback" />
+
+                <h:outputLabel for="ncat_dispOrder" value="Kolejność wyświetlania" />
+                <h:inputText id="ncat_dispOrder" value="#{controller.form.displayOrder}" />
+                <h:message for="ncat_dispOrder" errorClass="ca-invalid-feedback" />
+
+                <h:outputLabel for="ncat_searchable" value="Wyszukiwalne" />
+                <h:selectBooleanCheckbox id="ncat_searchable" value="#{controller.form.searchable}" />
+                <h:message for="ncat_searchable" errorClass="ca-invalid-feedback" />
+            </h:panelGrid>
+
+            <h:commandLink action="#{controller.createNewAttributeTemplate}" styleClass="btn btn-success">
+                <h:graphicImage value="/resources/gfx/icons/check_16.png"/>
+                Dodaj
+            </h:commandLink>
+        </o:form>
+
+    </ui:define>
+
+</ui:composition>

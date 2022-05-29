@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+      xmlns:o="http://omnifaces.org/ui"
+      xmlns:of="http://omnifaces.org/functions"
+      xmlns:p="http://primefaces.org/ui">
+<!-- JSF parameters -->
+<!--@elvariable id="fieldId" type="java.lang.String" -->
+<!--@elvariable id="attributeType" type="net.kawinski.collecting.data.model.AttributeType"-->
+<!--@elvariable id="form" type="net.kawinski.collecting.presentation.controllers.attribute.EditAttributeBaseController"-->
+<!--@elvariable id="triStateBoolean" type="java.lang.Boolean"-->
+<h:body>
+
+    <!-- One nice JSF thing is that it has built-in type converters.
+    ==== https://docs.oracle.com/javaee/7/api/javax/faces/convert/package-summary.html -->
+
+
+    <h:selectBooleanCheckbox rendered="#{attributeType == attributeTypeController.BOOLEAN and not triStateBoolean}"
+        id="${fieldId}_${attributeTypeController.BOOLEAN.name()}" value="#{form.valueBoolean}"/>
+
+    <h:selectOneMenu rendered="#{attributeType == attributeTypeController.BOOLEAN and triStateBoolean}"
+            id="${fieldId}_${attributeTypeController.BOOLEAN.name()}_3state" value="#{form.valueBoolean}">
+        <f:selectItem itemValue="#{null}" itemLabel="Wybierz"/>
+        <f:selectItem itemValue="#{true}" itemLabel="Tak"/>
+        <f:selectItem itemValue="#{false}" itemLabel="Nie"/>
+    </h:selectOneMenu>
+
+    <h:inputText rendered="#{attributeType == attributeTypeController.INTEGER}"
+        id="${fieldId}_${attributeTypeController.INTEGER.name()}" value="#{form.valueInt}" />
+
+    <h:inputText rendered="#{attributeType == attributeTypeController.DECIMAL}"
+        id="${fieldId}_${attributeTypeController.DECIMAL.name()}" value="#{form.valueDouble}" />
+
+    <h:inputText rendered="#{attributeType == attributeTypeController.STRING}"
+        id="${fieldId}_${attributeTypeController.STRING.name()}" value="#{form.valueString}" a:maxlength="200" />
+
+    <h:inputTextarea rendered="#{attributeType == attributeTypeController.LONG_STRING}"
+         id="${fieldId}_${attributeTypeController.LONG_STRING.name()}" value="#{form.valueString}" a:maxlength="4096" />
+
+    <p:datePicker rendered="#{attributeType == attributeTypeController.DATETIME}"
+                  id="${fieldId}_${attributeTypeController.DATETIME.name()}" value="#{form.valueDateTime}"
+                  showTime="true" showButtonBar="true" showIcon="true" pattern="yyyy.MM.dd HH:mm"/>
+
+    <p:fileUpload rendered="#{attributeType == attributeTypeController.IMAGE}"
+                  id="${fieldId}_${attributeTypeController.IMAGE.name()}" value="#{form.valueFile}" mode="simple" skinSimple="true"/>
+
+    <!-- TODO: Force either to be filled. If both are left blank, an exception happens in the controller -->
+    <h:inputText rendered="#{attributeType == attributeTypeController.BARCODE}"
+                 id="${fieldId}_${attributeTypeController.BARCODE.name()}" value="#{form.valueString}" a:maxlength="80" />
+    <p:fileUpload rendered="#{attributeType == attributeTypeController.BARCODE}"
+                  id="${fieldId}_${attributeTypeController.BARCODE.name()}_file" value="#{form.valueFile}" mode="simple" skinSimple="true"/>
+    <!-- TODO: Zdjecie z telefonu -->
+
+</h:body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+      xmlns:o="http://omnifaces.org/ui"
+      xmlns:of="http://omnifaces.org/functions"
+      xmlns:p="http://primefaces.org/ui">
+<!-- Most attributes are displayed with 1 cell (<td>...</td> tag),
+==== but some (like barcodes) use 2 cells. First for image, second for text representation. -->
+<!-- JSF parameters -->
+<!--@elvariable id="attributeValue" type="net.kawinski.collecting.data.model.AttributeValue"-->
+<h:body>
+
+    <td>
+        <h:graphicImage rendered="#{attributeValue.type == attributeTypeController.BOOLEAN and attributeTypeController.BOOLEAN_DRIVER.parse(attributeValue.raw)}"
+                        value="/resources/gfx/icons/check_16.png"/>
+        <h:graphicImage rendered="#{attributeValue.type == attributeTypeController.BOOLEAN and not attributeTypeController.BOOLEAN_DRIVER.parse(attributeValue.raw)}"
+                        value="/resources/gfx/icons/close_16.png"/>
+
+        <h:outputText rendered="#{attributeValue.type == attributeTypeController.INTEGER}"
+                      value="#{attributeValue.raw}"/>
+
+        <h:outputText rendered="#{attributeValue.type == attributeTypeController.DECIMAL}"
+                      value="#{attributeValue.raw}"/>
+
+        <h:outputText rendered="#{attributeValue.type == attributeTypeController.STRING}"
+                      value="#{attributeValue.raw}"/>
+
+        <h:inputTextarea rendered="#{attributeValue.type == attributeTypeController.LONG_STRING}"
+                         value="#{attributeValue.raw}"
+                         disabled="true" styleClass="ca-textarea"
+        />
+
+        <h:outputText rendered="#{attributeValue.type == attributeTypeController.DATETIME}"
+                      value="#{attributeTypeController.DATETIME_DRIVER.parse(attributeValue.raw)}">
+            <f:convertDateTime pattern="yyyy.MM.dd HH:mm" />
+        </h:outputText>
+
+        <h:graphicImage rendered="#{attributeValue.type == attributeTypeController.IMAGE}"
+                        value="/uploads?file=#{attributeValue.raw}" alt="Zdjęcie"/>
+
+        <ui:fragment rendered="#{attributeValue.type == attributeTypeController.BARCODE}">
+            <h:outputText value="#{attributeValue.raw}" styleClass="mr-2"/>
+            <h:graphicImage value="/barcode?value=#{attributeValue.raw}" alt="Kod kreskowy"/>
+        </ui:fragment>
+
+    </td>
+
+</h:body>
+</html>

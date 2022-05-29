@@ -1,0 +1,98 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:of="http://omnifaces.org/functions"
+                xmlns:p="http://primefaces.org/ui"
+>
+    <ui:param name="caPageName" value="Preferencje" />
+
+    <ui:define name="main">
+        <c:set var="controller" value="#{preferencesController}" />
+        <f:metadata>
+            <f:viewParam name="id"/>
+        </f:metadata>
+
+        <p>
+            Cześć, <strong><h:outputText value="#{controller.user.name}" /></strong>!<br/>
+        </p>
+
+        <o:form includeViewParams="true" enctype="multipart/form-data">
+            <b>Twoje dane:<br/></b>
+            <table class="ca-table">
+                <tr>
+                    <td>Id</td>
+                    <td><h:outputText value="#{controller.user.id}"/></td>
+                </tr>
+                <tr>
+                    <td>Nazwa użytkownika</td>
+                    <td><h:inputText value="#{controller.user.name}"/></td>
+                </tr>
+                <tr>
+                    <td>Adres E-mail</td>
+                    <td><h:inputText value="#{controller.newEmail}"/></td>
+                </tr>
+                <tr>
+                    <td>Obecne hasło</td>
+                    <td><h:inputSecret value="#{controller.oldPassword}"/></td>
+                </tr>
+                <tr>
+                    <td>Nowe hasło</td>
+                    <td><h:inputSecret value="#{controller.newPassword}"/></td>
+                </tr>
+                <tr>
+                    <td><h:outputLabel for="details_file" value="Nowe zdjęcie" /></td>
+                    <td><p:fileUpload id="details_file" value="#{controller.uploadedImage}" mode="simple" skinSimple="true"/></td>
+                    <td><h:message for="details_file" errorClass="ca-invalid-feedback" /></td>
+                </tr>
+                <c:if test="#{controller.user.image.icon != null}">
+                    <tr>
+                        <td>Miniaturka</td>
+                        <td>
+                            <ui:include src="/WEB-INF/templates/renderIcon.xhtml">
+                                <ui:param name="icon" value="#{controller.user.image}" />
+                            </ui:include>
+                        </td>
+                    </tr>
+                </c:if>
+                <tr>
+                    <td><h:outputLabel for="details_icon" value="Nowa miniaturka" /></td>
+                    <td><p:fileUpload id="details_icon" value="#{controller.uploadedIcon}" mode="simple" skinSimple="true"/></td>
+                    <td><h:message for="details_icon" errorClass="ca-invalid-feedback" /></td>
+                </tr>
+            </table>
+
+            <br/>
+            <b>Dane kontaktowe:<br/></b>
+            <table class="ca-table">
+                <tr>
+                    <td>E-mail</td>
+                    <td><h:inputText value="#{controller.user.userDetails.contactEmail}" /></td>
+                </tr>
+                <tr>
+                    <td>Facebook</td>
+                    <td><h:inputText value="#{controller.user.userDetails.facebook}" /></td>
+                </tr>
+                <tr>
+                    <td>Skype</td>
+                    <td><h:inputText value="#{controller.user.userDetails.skype}" /></td>
+                </tr>
+            </table>
+
+            <br/>
+            <b>O mnie:<br/></b>
+            <h:inputTextarea style="min-width: 500px; min-height: 300px;"
+                    value="#{controller.user.userDetails.aboutMe}"/>
+
+            <br/>
+            <h:commandButton id="updateButton" action="#{controller.update}" styleClass="btn btn-success"
+                             value="Aktualizuj" />
+        </o:form>
+
+    </ui:define>
+</ui:composition>

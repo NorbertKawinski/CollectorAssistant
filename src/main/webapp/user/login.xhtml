@@ -1,0 +1,43 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:of="http://omnifaces.org/functions"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:param name="caPageName" value="Logowanie" />
+
+    <ui:define name="main">
+        <c:set var="controller" value="#{loginController}"/>
+        <h2>Login</h2>
+        <p>Login by entering your credentials in the form below</p>
+
+        <h:form id="loginForm">
+            <h:inputHidden id="continue" value="#{controller.loginToContinue}"/>
+            <h:panelGrid columns="3" styleClass="ca-table" columnClasses="titleCell">
+                <h:outputLabel for="username" value="Nazwa:" />
+                <h:inputText id="username" value="#{controller.loginCredentials.nameOrEmail}" />
+                <h:message for="username" errorClass="ca-invalid-feedback" />
+
+                <h:outputLabel for="password" value="Hasło:" />
+                <h:inputSecret id="password"
+                               value="#{controller.loginCredentials.password}" />
+                <h:message for="password" errorClass="ca-invalid-feedback" />
+
+                <h:outputLabel for="rememberMe" value="Zapamiętaj mnie:" />
+                <h:selectBooleanCheckbox id="rememberMe" value="#{controller.loginCredentials.rememberMe}" />
+                <h:message for="rememberMe" errorClass="ca-invalid-feedback" />
+            </h:panelGrid>
+
+            <h:panelGrid columns="2" styleClass="ca-table">
+                <h:commandButton id="loginButton" action="#{controller.login}" styleClass="btn btn-success"
+                                 value="Zaloguj" />
+            </h:panelGrid>
+        </h:form>
+
+    </ui:define>
+</ui:composition>
